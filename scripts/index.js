@@ -4,8 +4,7 @@ const Web3 = require("web3");
 const Provider = require("@truffle/hdwallet-provider");
 const goerliNodeUrl = process.env.goerliNodeURl;
 
-console.log(goerliNodeUrl)
-
+console.log(goerliNodeUrl);
 
 //Smart COntract ABIS for accountmanager contract for fetching the lowest cr ratio accounts
 const ACCOUNT_MANAGER = require("../contractAbis/accountManager.json");
@@ -15,14 +14,17 @@ const multiAccountGetter = "0xBe3D52C8294430EE7B0B6b67749a4752eFd0dBA0";
 const accountManager = "0x24aa4914f476526aF9Eac4B9c5B9C090FCEfe5AB";
 const bowrowerContractAddress = "0x19dc6BDC4152F20076a48398748B4C07Fe4fCaAA";
 
+const feedAddress = "0x77D02c1EcD774a0Bc2e35B563d231d6625D00D9c";
+
 //Private Key for wallet 0x113Fca29bE47647c26B4E9b5dFA040c4b2dFD11b
 const adminAddress = "0x113Fca29bE47647c26B4E9b5dFA040c4b2dFD11b";
 const privateKey = process.env.privateKey;
 const provider = new Provider(privateKey, goerliNodeUrl);
 const web3 = new Web3(provider);
 
-
 //convert collateral to percentage
+
+
 
 const multiAccountGetterContractInitiate = new web3.eth.Contract(
   ACCOUNT_MANAGER,
@@ -37,7 +39,6 @@ const borrowerContract = new web3.eth.Contract(
 );
 
 let collPrice;
-
 
 //Call Function liquidateAccounts From quickswap router contract
 const fetchValues = async () => {
@@ -57,15 +58,16 @@ const fetchValues = async () => {
               value.map(async ({ coll, owner, debt }) => {
                 const Collateral = coll * 1e-18;
                 const Debt = debt * 1e-18;
-                const CollPrice = Collateral * collPrice * 1e-18;
-                const CrRatio = (Collateral * CollPrice) / Debt;
+                const CollValue = Collateral * collPrice * 1e-18;
+                const CrRatio = CollValue / Debt;
                 const ownerAccount = [owner];
+                const minCR = 1;
 
                 console.table([
-                  { ownerAccount, Collateral, Debt, CollPrice, CrRatio },
+                  { ownerAccount, Collateral, Debt, CollValue, CrRatio },
                 ]);
 
-                if (CrRatio > 110) {
+                if (CrRatio < minCR) {
                   console.log(ownerAccount[0]);
                   try {
                     const liquidate = await accountmanager.methods
@@ -78,7 +80,7 @@ const fetchValues = async () => {
                     console.log(error);
                   }
                 } else {
-                  console.log("Re Attempting")
+                  console.log("Re Attempting");
                   return;
                 }
               });
@@ -92,7 +94,9 @@ const fetchValues = async () => {
   }
 };
 
-setInterval(fetchValues, 60000);
+// setInterval(fetchValues, 10000);
+
+fetchValues()
 
 //to liquidate single account
 // const liquidateSingleAccount = async () => {
@@ -111,4 +115,3 @@ setInterval(fetchValues, 60000);
 // liquidateSingleAccount();
 // fetchValues();
 // batchLiquidateAccounts();
-
