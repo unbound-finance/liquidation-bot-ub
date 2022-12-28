@@ -31,14 +31,14 @@ async function main() {
 
                 try {
 
-                    accountManager.methods.liquidateAccounts(1).estimateGas({ from: adminAddress }, function (etimateErr, gasAmount) {
+                    accountManager.methods.liquidateAccounts(5).estimateGas({ from: adminAddress }, function (etimateErr, gasAmount) {
                         if (etimateErr) {
                             if (!etimateErr.toString().includes("AccountManager: nothing to liquidate")) {
                                 console.log({ etimateErr })
                             }
                         } else {
                             console.log("Found liquitable account....")
-                            accountManager.methods.liquidateAccounts(1)
+                            accountManager.methods.liquidateAccounts(5)
                                 .send({ from: adminAddress, gas: gasAmount }, function (txErr, transactionHash) {
                                     if (txErr) {
                                         console.log("Error while executing transaction: ")
