@@ -2,7 +2,6 @@
 require("dotenv").config();
 const Web3 = require("web3");
 const Provider = require("@truffle/hdwallet-provider");
-const goerliNodeUrl = process.env.goerliNodeURl;
 
 const privateKey = process.env.privateKey;
 const provider = new Provider(privateKey, goerliNodeUrl);
@@ -25,7 +24,7 @@ const setPrice = async () => {
 
     //   console.log(setValue)
   } catch (e) {
-    console.log("Error"), e;
+    console.log("Error", e);
   }
 };
 
