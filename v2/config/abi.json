@@ -1,0 +1,122 @@
+[
+	{
+		"inputs": [
+		  {
+			"internalType": "int256",
+			"name": "_startIdx",
+			"type": "int256"
+		  },
+		  {
+			"internalType": "uint256",
+			"name": "_count",
+			"type": "uint256"
+		  }
+		],
+		"name": "getMultipleSortedAccounts",
+		"outputs": [
+		  {
+			"components": [
+			  {
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			  },
+			  {
+				"internalType": "uint256",
+				"name": "debt",
+				"type": "uint256"
+			  },
+			  {
+				"internalType": "uint256",
+				"name": "coll",
+				"type": "uint256"
+			  }
+			],
+			"internalType": "struct MultiAccountGetter.CombinedAccountData[]",
+			"name": "_accounts",
+			"type": "tuple[]"
+		  }
+		],
+		"stateMutability": "view",
+		"type": "function"
+	  },
+	  {
+		"inputs": [
+		  {
+			"internalType": "address[]",
+			"name": "_accountArray",
+			"type": "address[]"
+		  }
+		],
+		"name": "batchLiquidateAccounts",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	  },
+	  {
+		"inputs": [],
+		"name": "getAccountOwnersCount",
+		"outputs": [
+		  {
+			"internalType": "uint256",
+			"name": "",
+			"type": "uint256"
+		  }
+		],
+		"stateMutability": "view",
+		"type": "function"
+	  },
+	  {
+        "inputs": [
+            {
+                "internalType": "int256",
+                "name": "newPrice",
+                "type": "int256"
+            }
+        ],
+        "name": "setPrice",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+	  {
+		"inputs": [
+		  {
+			"internalType": "uint256",
+			"name": "_n",
+			"type": "uint256"
+		  }
+		],
+		"name": "liquidateAccounts",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	  },
+	  {
+		"inputs": [
+		  {
+			"internalType": "address",
+			"name": "_borrower",
+			"type": "address"
+		  }
+		],
+		"name": "liquidate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	  },
+	  {
+		"inputs": [],
+		"name": "getCollPrice",
+		"outputs": [
+		  {
+			"internalType": "uint256",
+			"name": "",
+			"type": "uint256"
+		  }
+		],
+		"stateMutability": "view",
+		"type": "function"
+	  }
+	  
+]
