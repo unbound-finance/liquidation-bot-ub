@@ -9,7 +9,7 @@ const WEB3_WSS_NODE_URL = process.env.nodeWssUrl;
 const ACCOUNT_MANAGER_ADDRESS = "0x24aa4914f476526aF9Eac4B9c5B9C090FCEfe5AB";
 
 //Private Key and address for admin wallet which holds the UND balance
-const adminAddress = "0x07551C8c7b83f8Ea04c01cdb55686e59d5A24a1D";
+const adminAddress = "0x6ae549b3e279DE338E4d79f6f897b66BD392C453";
 const privateKey = process.env.privateKey; // without 0x
 
 const web3Http = new Web3(new Provider(privateKey, WEB3_HTTP_NODE_URL));
