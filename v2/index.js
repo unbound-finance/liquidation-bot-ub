@@ -96,28 +96,30 @@ function _checkAndPerformLiquidation(accManagerInstance, vaultName){
 
 async function waitForConfirmation (txHash) {
 
-    if(!txHash) {
-        resolve(false);
-    }
-
     return new Promise(function(resolve, reject){
-        let txCheck = setInterval(()=>{
-            console.log('txcheck====')
-            web3Http.eth.getTransactionReceipt(txHash, function(err, response){
-                if(!err){
-                    console.log(response ? "true" : "false")
-                    if(response != null){
-                        if(response.status == '0x0'){
-                            clearInterval(txCheck)
-                            resolve(false)
-                        } else if(response.status == '0x1'){
-                            clearInterval(txCheck)
-                            resolve(true)
+        if(!txHash) {
+            resolve(false);
+        } else {
+    
+            let txCheck = setInterval(()=>{
+                console.log('txcheck====')
+                web3Http.eth.getTransactionReceipt(txHash, function(err, response){
+                    if(!err){
+                        console.log(response ? "true" : "false")
+                        if(response != null){
+                            if(response.status == '0x0'){
+                                clearInterval(txCheck)
+                                resolve(false)
+                            } else if(response.status == '0x1'){
+                                clearInterval(txCheck)
+                                resolve(true)
+                            }
                         }
                     }
-                }
-            })
-        }, 2000)
+                })
+            }, 2000)
+
+        }
     })
 }
 
