@@ -31,7 +31,7 @@ async function main() {
 
     let lock = false
 
-    web3Wss.eth.subscribe('newBlockHeaders', (error, block) => {
+    web3Wss.eth.subscribe('newBlockHeaders', async (error, block) => {
 
         if (!error) {
             console.log(`New Block Mined: ${block.number}`)
@@ -41,10 +41,17 @@ async function main() {
 
                 try {
 
-                    _checkAndPerformLiquidation(accManagerInstance0, VAULTS[0].vaultName);
-                    _checkAndPerformLiquidation(accManagerInstance1, VAULTS[1].vaultName);
-                    _checkAndPerformLiquidation(accManagerInstance2, VAULTS[2].vaultName);
-                    _checkAndPerformLiquidation(accManagerInstance3, VAULTS[3].vaultName);
+                    let tx1 = _checkAndPerformLiquidation(accManagerInstance0, VAULTS[0].vaultName);
+                    let tx2 = _checkAndPerformLiquidation(accManagerInstance1, VAULTS[1].vaultName);
+                    let tx3 = _checkAndPerformLiquidation(accManagerInstance2, VAULTS[2].vaultName);
+                    let tx4 = _checkAndPerformLiquidation(accManagerInstance3, VAULTS[3].vaultName);
+
+                    await Promise.all([
+                        waitForConfirmation(tx1), 
+                        waitForConfirmation(tx2), 
+                        waitForConfirmation(tx3), 
+                        waitForConfirmation(tx4), 
+                    ])
 
                 } catch (catchErr) {
                     console.log({ catchErr })
@@ -84,6 +91,33 @@ function _checkAndPerformLiquidation(accManagerInstance, vaultName){
                     }
                 })
         }
+    })
+}
+
+async function waitForConfirmation (txHash) {
+
+    if(!txHash) {
+        resolve(false);
+    }
+
+    return new Promise(function(resolve, reject){
+        let txCheck = setInterval(()=>{
+            console.log('txcheck====')
+            web3Http.eth.getTransactionReceipt(txHash, function(err, response){
+                if(!err){
+                    console.log(response ? "true" : "false")
+                    if(response != null){
+                        if(response.status == '0x0'){
+                            clearInterval(txCheck)
+                            resolve(false)
+                        } else if(response.status == '0x1'){
+                            clearInterval(txCheck)
+                            resolve(true)
+                        }
+                    }
+                }
+            })
+        }, 2000)
     })
 }
 
