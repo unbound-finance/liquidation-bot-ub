@@ -9,10 +9,10 @@ const WEB3_HTTP_NODE_URL = process.env.nodeHttpUrl;
 const WEB3_WSS_NODE_URL = process.env.nodeWssUrl;
 
 const VAULTS = [
-    { accManagerAddress: "0x926dF19A0D9A0f515FEa9ab05a10757Ee0936231", vaultName: "WETH-USDT-DESHARE"},
-    { accManagerAddress: "0x420dEd88402f16f9C6d462a231eD07E81AAb0E5F", vaultName: "DAI-USDT-DESHARE"},
-    { accManagerAddress: "0xe4EC7988a96AEF91bB19E63e433cBe48beF57a65", vaultName: "WETH-USDT-LP"},
-    { accManagerAddress: "0xC651E7440617ECd413075f0E4Cdb79067952961F", vaultName: "DAI-USDC-LP"}
+    { accManagerAddress: "0xc71A2ED3BC4cFcA06824e4175093fc7503aA4cB0", vaultName: "WETH-USDT-DESHARE"},
+    { accManagerAddress: "0x5976Bf3bc4c01F9Bb20EAdF9906c4403615A0672", vaultName: "DAI-USDC-DESHARE"},
+    { accManagerAddress: "0x3c657C6479D8f38861eF4Bcbf1aa0dbf538b126d", vaultName: "WETH-USDT-LP"},
+    { accManagerAddress: "0x49Ac6364cD2e974489523a767858D149FfCf9677", vaultName: "DAI-USDC-LP"}
 ]
 
 //Private Key and address for admin wallet which holds the UND balance
