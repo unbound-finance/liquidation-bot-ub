@@ -53,12 +53,15 @@ async function main() {
                         waitForConfirmation(tx4), 
                     ])
 
+                    lock = false
+
+
                 } catch (catchErr) {
                     console.log({ catchErr })
                     fs.appendFile('./logs/errors.txt', Date.now() + " - catch error: " + catchErr.toString() + ",\n", (err) => { });
+                    lock = false
                 }
 
-                lock = false
             }
 
         } else {
