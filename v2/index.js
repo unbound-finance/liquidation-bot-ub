@@ -12,7 +12,9 @@ const VAULTS = [
     { accManagerAddress: "0xc71A2ED3BC4cFcA06824e4175093fc7503aA4cB0", vaultName: "WETH-USDT-DESHARE"},
     { accManagerAddress: "0x5976Bf3bc4c01F9Bb20EAdF9906c4403615A0672", vaultName: "DAI-USDC-DESHARE"},
     { accManagerAddress: "0x3c657C6479D8f38861eF4Bcbf1aa0dbf538b126d", vaultName: "WETH-USDT-LP"},
-    { accManagerAddress: "0x49Ac6364cD2e974489523a767858D149FfCf9677", vaultName: "DAI-USDC-LP"}
+    { accManagerAddress: "0x49Ac6364cD2e974489523a767858D149FfCf9677", vaultName: "DAI-USDC-LP"},
+    { accManagerAddress: "0xb865c0968cB71572E5e1617EFee6e4D528705ccE", vaultName: "FRAZ-USDC.e-LP"},  // arbidex
+    { accManagerAddress: "0xDDDb41f5b739550d1D5b75f0E1e9FD8a01fB8FdC", vaultName: "WETH-USDC-LP"} // arbidex
 ]
 
 //Private Key and address for admin wallet which holds the UND balance
@@ -26,6 +28,8 @@ const accManagerInstance0 = new web3Http.eth.Contract(ABI, VAULTS[0].accManagerA
 const accManagerInstance1 = new web3Http.eth.Contract(ABI, VAULTS[1].accManagerAddress)
 const accManagerInstance2 = new web3Http.eth.Contract(ABI, VAULTS[2].accManagerAddress)
 const accManagerInstance3 = new web3Http.eth.Contract(ABI, VAULTS[3].accManagerAddress)
+const accManagerInstance4 = new web3Http.eth.Contract(ABI, VAULTS[4].accManagerAddress)
+const accManagerInstance5 = new web3Http.eth.Contract(ABI, VAULTS[5].accManagerAddress)
 
 async function main() {
 
@@ -45,12 +49,16 @@ async function main() {
                     let tx2 = _checkAndPerformLiquidation(accManagerInstance1, VAULTS[1].vaultName);
                     let tx3 = _checkAndPerformLiquidation(accManagerInstance2, VAULTS[2].vaultName);
                     let tx4 = _checkAndPerformLiquidation(accManagerInstance3, VAULTS[3].vaultName);
+                    let tx5 = _checkAndPerformLiquidation(accManagerInstance4, VAULTS[4].vaultName);
+                    let tx6 = _checkAndPerformLiquidation(accManagerInstance5, VAULTS[5].vaultName);
 
                     await Promise.all([
                         waitForConfirmation(tx1), 
                         waitForConfirmation(tx2), 
                         waitForConfirmation(tx3), 
                         waitForConfirmation(tx4), 
+                        waitForConfirmation(tx5), 
+                        waitForConfirmation(tx6), 
                     ])
 
                     lock = false
