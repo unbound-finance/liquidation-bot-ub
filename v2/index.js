@@ -31,45 +31,36 @@ const accManagerInstance3 = new web3Http.eth.Contract(ABI, VAULTS[3].accManagerA
 const accManagerInstance4 = new web3Http.eth.Contract(ABI, VAULTS[4].accManagerAddress)
 const accManagerInstance5 = new web3Http.eth.Contract(ABI, VAULTS[5].accManagerAddress)
 
+var lock = false;
 async function main() {
-
-    let lock = false
 
     web3Wss.eth.subscribe('newBlockHeaders', async (error, block) => {
 
         if (!error) {
             console.log(`New Block Mined: ${block.number}`)
 
-            if (lock == false) {
-                lock = true
+            try {
 
-                try {
+                let tx1 = await _checkAndPerformLiquidation(accManagerInstance0, VAULTS[0].vaultName);
+                let tx2 = await _checkAndPerformLiquidation(accManagerInstance1, VAULTS[1].vaultName);
+                let tx3 = await _checkAndPerformLiquidation(accManagerInstance2, VAULTS[2].vaultName);
+                let tx4 = await _checkAndPerformLiquidation(accManagerInstance3, VAULTS[3].vaultName);
+                let tx5 = await _checkAndPerformLiquidation(accManagerInstance4, VAULTS[4].vaultName);
+                let tx6 = await _checkAndPerformLiquidation(accManagerInstance5, VAULTS[5].vaultName);
 
-                    let tx1 = _checkAndPerformLiquidation(accManagerInstance0, VAULTS[0].vaultName);
-                    let tx2 = _checkAndPerformLiquidation(accManagerInstance1, VAULTS[1].vaultName);
-                    let tx3 = _checkAndPerformLiquidation(accManagerInstance2, VAULTS[2].vaultName);
-                    let tx4 = _checkAndPerformLiquidation(accManagerInstance3, VAULTS[3].vaultName);
-                    let tx5 = _checkAndPerformLiquidation(accManagerInstance4, VAULTS[4].vaultName);
-                    let tx6 = _checkAndPerformLiquidation(accManagerInstance5, VAULTS[5].vaultName);
+                // await Promise.all([
+                //     waitForConfirmation(tx1), 
+                //     waitForConfirmation(tx2), 
+                //     waitForConfirmation(tx3), 
+                //     waitForConfirmation(tx4), 
+                //     waitForConfirmation(tx5), 
+                //     waitForConfirmation(tx6), 
+                // ])
 
-                    await Promise.all([
-                        waitForConfirmation(tx1), 
-                        waitForConfirmation(tx2), 
-                        waitForConfirmation(tx3), 
-                        waitForConfirmation(tx4), 
-                        waitForConfirmation(tx5), 
-                        waitForConfirmation(tx6), 
-                    ])
-
-                    lock = false
-
-
-                } catch (catchErr) {
-                    console.log({ catchErr })
-                    fs.appendFile('./logs/errors.txt', Date.now() + " - catch error: " + catchErr.toString() + ",\n", (err) => { });
-                    lock = false
-                }
-
+            } catch (catchErr) {
+                console.log({ catchErr })
+                fs.appendFile('./logs/errors.txt', Date.now() + " - catch error: " + catchErr.toString() + ",\n", (err) => { });
+                lock = false
             }
 
         } else {
@@ -81,7 +72,7 @@ async function main() {
 
 }
 
-function _checkAndPerformLiquidation(accManagerInstance, vaultName){
+async function _checkAndPerformLiquidation(accManagerInstance, vaultName){
     accManagerInstance.methods.liquidateAccounts(5).estimateGas({ from: adminAddress }, function (etimateErr, gasAmount) {
         if (etimateErr) {
             if (!etimateErr.toString().includes("AccountManager: nothing to liquidate")) {
@@ -89,18 +80,32 @@ function _checkAndPerformLiquidation(accManagerInstance, vaultName){
                 fs.appendFile('./logs/errors.txt', "Vault: " + vaultName + " - " + Date.now() + " - estimate error: " + etimateErr.message + ",\n", (err) => { });
             }
         } else {
-            // console.log("Found liquitable account....")
-            accManagerInstance.methods.liquidateAccounts(5)
-                .send({ from: adminAddress, gas: gasAmount }, function (txErr, transactionHash) {
-                    if (txErr) {
-                        console.log("Error while executing transaction: ")
-                        console.log(vaultName + " - " + txErr.toString())
-                        fs.appendFile('./logs/errors.txt', "Vault: " + vaultName + " - " + Date.now() + " - execution error: " + txErr.toString() + ",\n", (err) => { });
-                    } else {
-                        console.log(vaultName + " - " + "Liquidation Transaction sent: ", transactionHash)
-                        fs.appendFile('./logs/logs.txt', "Vault: " + vaultName + " - " + Date.now() + " - Liquidation Transaction sent: " + transactionHash + ",\n", (err) => { });
-                    }
-                })
+
+            if (lock == false) {
+
+                lock = true;
+
+                console.log("Found liquitable account....")
+                console.log("vaultName: "+ vaultName +" - " +accManagerInstance._address)
+    
+                accManagerInstance.methods.liquidateAccounts(5)
+                    .send({ from: adminAddress, gas: gasAmount }, async function (txErr, transactionHash) {
+                        if (txErr) {
+                            lock = false;
+                            console.log("Error while executing transaction: ")
+                            console.log(vaultName + " - " + txErr.toString())
+                            fs.appendFile('./logs/errors.txt', "Vault: " + vaultName + " - " + Date.now() + " - execution error: " + txErr.toString() + ",\n", (err) => { });
+                        } else {
+                            console.log(vaultName + " - " + "Liquidation Transaction sent: ", transactionHash)
+                            fs.appendFile('./logs/logs.txt', "Vault: " + vaultName + " - " + Date.now() + " - Liquidation Transaction sent: " + transactionHash + ",\n", (err) => { });
+                            await waitForConfirmation(transactionHash);
+                            lock = false;
+                        }
+                    })
+
+            } else {
+                console.log("locked.....")
+            }
         }
     })
 }
@@ -113,7 +118,7 @@ async function waitForConfirmation (txHash) {
         } else {
     
             let txCheck = setInterval(()=>{
-                console.log('txcheck====')
+                console.log('------Waiting for confirmation: ' + txHash)
                 web3Http.eth.getTransactionReceipt(txHash, function(err, response){
                     if(!err){
                         console.log(response ? "true" : "false")
