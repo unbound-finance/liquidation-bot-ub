@@ -72,6 +72,33 @@ async function main() {
 
 }
 
+async function _performLiquidation(){
+    try {
+        console.log("Checking for liquidation...")
+
+        let tx1 = await _checkAndPerformLiquidation(accManagerInstance0, VAULTS[0].vaultName);
+        let tx2 = await _checkAndPerformLiquidation(accManagerInstance1, VAULTS[1].vaultName);
+        let tx3 = await _checkAndPerformLiquidation(accManagerInstance2, VAULTS[2].vaultName);
+        let tx4 = await _checkAndPerformLiquidation(accManagerInstance3, VAULTS[3].vaultName);
+        let tx5 = await _checkAndPerformLiquidation(accManagerInstance4, VAULTS[4].vaultName);
+        let tx6 = await _checkAndPerformLiquidation(accManagerInstance5, VAULTS[5].vaultName);
+
+        // await Promise.all([
+        //     waitForConfirmation(tx1), 
+        //     waitForConfirmation(tx2), 
+        //     waitForConfirmation(tx3), 
+        //     waitForConfirmation(tx4), 
+        //     waitForConfirmation(tx5), 
+        //     waitForConfirmation(tx6), 
+        // ])
+
+    } catch (catchErr) {
+        console.log({ catchErr })
+        fs.appendFile('./logs/errors.txt', Date.now() + " - catch error: " + catchErr.toString() + ",\n", (err) => { });
+        lock = false
+    }
+}
+
 async function _checkAndPerformLiquidation(accManagerInstance, vaultName){
     accManagerInstance.methods.liquidateAccounts(5).estimateGas({ from: adminAddress }, function (etimateErr, gasAmount) {
         if (etimateErr) {
@@ -139,4 +166,4 @@ async function waitForConfirmation (txHash) {
     })
 }
 
-main()
+setInterval(_performLiquidation, 15000)
